@@ -1,0 +1,531 @@
+/* ==========================================================================
+   THEMES
+   Each palette sets the accent channels used across style.css. The 3D scenes
+   read the same values (see src/theme.js), so everything recolors together.
+   ========================================================================== */
+:root,
+:root[data-theme="ocean"]{
+  --accent: #38bdf8;
+  --accent-strong: #0ea5e9;
+  --lilac: #7dd3fc;
+  --accent-pale: #e0f2fe;
+  --accent-2: #818cf8;
+  --on-accent: #04253a;
+  --accent-rgb: 56, 189, 248;
+  --accent-strong-rgb: 14, 165, 233;
+  --lilac-rgb: 125, 211, 252;
+  --accent-2-rgb: 129, 140, 248;
+  --glow-rgb: 37, 99, 235;
+  --featured-rgb: 14, 90, 140;
+}
+:root[data-theme="aurora"]{
+  --accent: #a78bfa;
+  --accent-strong: #8b5cf6;
+  --lilac: #c4b5fd;
+  --accent-pale: #ede9fe;
+  --accent-2: #f472b6;
+  --on-accent: #1e0b4b;
+  --accent-rgb: 167, 139, 250;
+  --accent-strong-rgb: 139, 92, 246;
+  --lilac-rgb: 196, 181, 253;
+  --accent-2-rgb: 244, 114, 182;
+  --glow-rgb: 109, 40, 217;
+  --featured-rgb: 76, 29, 149;
+}
+:root[data-theme="emerald"]{
+  --accent: #34d399;
+  --accent-strong: #10b981;
+  --lilac: #6ee7b7;
+  --accent-pale: #d1fae5;
+  --accent-2: #22d3ee;
+  --on-accent: #022c22;
+  --accent-rgb: 52, 211, 153;
+  --accent-strong-rgb: 16, 185, 129;
+  --lilac-rgb: 110, 231, 183;
+  --accent-2-rgb: 34, 211, 238;
+  --glow-rgb: 5, 150, 105;
+  --featured-rgb: 6, 95, 70;
+}
+:root[data-theme="sunset"]{
+  --accent: #fb923c;
+  --accent-strong: #f97316;
+  --lilac: #fdba74;
+  --accent-pale: #ffedd5;
+  --accent-2: #f43f5e;
+  --on-accent: #431407;
+  --accent-rgb: 251, 146, 60;
+  --accent-strong-rgb: 249, 115, 22;
+  --lilac-rgb: 253, 186, 116;
+  --accent-2-rgb: 244, 63, 94;
+  --glow-rgb: 194, 65, 12;
+  --featured-rgb: 124, 45, 18;
+}
+:root{
+  --gradient-accent: linear-gradient(135deg, var(--lilac) 0%, var(--accent) 55%, var(--accent-strong) 100%);
+  --gradient-aurora: linear-gradient(120deg, var(--accent-pale) 0%, var(--lilac) 35%, var(--accent) 65%, var(--accent-2) 100%);
+}
+body{ transition: background-color 0.5s ease; }
+
+/* Accent word: soft aurora gradient that slowly shifts */
+.text-gradient{
+  background: var(--gradient-aurora);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: aurora-shift 8s ease-in-out infinite alternate;
+  padding-right: 0.06em;
+}
+@keyframes aurora-shift{
+  from{ background-position: 0% 50%; }
+  to{ background-position: 100% 50%; }
+}
+
+/* ==========================================================================
+   HERO 3D LAYER
+   ========================================================================== */
+.hero-canvas{
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  animation: canvas-in 1.6s ease 0.2s forwards;
+}
+.hero-canvas canvas{ display: block; }
+.hero-canvas{ z-index: 0; }
+.hero-photo{ z-index: 1; } /* portrait stays in front of the 3D layer */
+.hero-inner{ z-index: 2; }
+@keyframes canvas-in{ to{ opacity: 1; } }
+
+/* Glass highlight around the hero copy on wide screens */
+.hero-label{
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  background: rgba(var(--accent-rgb), 0.08);
+  border: 1px solid rgba(var(--accent-rgb), 0.28);
+  backdrop-filter: blur(6px);
+}
+.hero-label::before, .hero-label::after{ display: none; }
+.hero-title{ text-wrap: balance; }
+
+/* ==========================================================================
+   CTA 3D ORB
+   ========================================================================== */
+.cta-section{ padding: 110px 0; }
+.cta-orb{
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.cta-inner{ position: relative; z-index: 1; }
+
+/* ==========================================================================
+   UI POLISH
+   ========================================================================== */
+/* Pointer spotlight that follows the cursor across the page (desktop) */
+.cursor-glow{
+  position: fixed;
+  top: 0; left: 0;
+  width: 520px; height: 520px;
+  margin: -260px 0 0 -260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.09) 0%, transparent 62%);
+  pointer-events: none;
+  z-index: 1;
+  transform: translate3d(var(--cx, -999px), var(--cy, -999px), 0);
+  transition: opacity 0.4s ease;
+}
+@media (hover: none), (prefers-reduced-motion: reduce){ .cursor-glow{ display: none; } }
+
+/* Featured pricing card and monthly pack: rotating gradient border */
+@property --spin{ syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.pricing-card.featured{ border-color: transparent; isolation: isolate; }
+.pricing-card.featured::before{
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from var(--spin), rgba(var(--accent-rgb), 0.15), var(--accent), rgba(var(--accent-2-rgb), 0.9), rgba(var(--accent-rgb), 0.15) 60%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: border-spin 6s linear infinite;
+  pointer-events: none;
+}
+@keyframes border-spin{ to{ --spin: 360deg; } }
+
+/* Cards: top highlight (no backdrop blur: it is costly while scrolling) */
+.stat-card, .feature-card, .pricing-card, .portfolio-card, .tech-card, .faq-item{
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.service-card:hover h3{ color: #fff; }
+
+.btn-primary{ position: relative; overflow: hidden; }
+.btn-primary::after{
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: -60%;
+  width: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+.btn-primary:hover::after{ left: 130%; transition: left 0.8s ease; }
+
+::selection{ background: rgba(var(--accent-rgb), 0.35); color: #fff; }
+:focus-visible{ outline-color: var(--accent); }
+
+/* Thin themed scrollbar */
+html{ scrollbar-color: rgba(var(--accent-rgb), 0.45) var(--bg-deep-2); scrollbar-width: thin; }
+
+/* ==========================================================================
+   THEME SWITCHER
+   ========================================================================== */
+.theme-switcher{
+  position: fixed;
+  right: 28px;
+  bottom: 88px;
+  z-index: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+.theme-toggle{
+  width: 46px; height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(20, 32, 56, 0.85);
+  border: 1px solid var(--border-strong);
+  color: var(--accent);
+  font-size: 1.05rem;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+.theme-toggle:hover{ transform: rotate(45deg) scale(1.06); }
+.theme-panel{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  min-width: 180px;
+  border-radius: var(--radius-md);
+  background: rgba(14, 22, 40, 0.92);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-lg);
+  transform-origin: bottom right;
+  animation: panel-pop 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.theme-panel-title{
+  padding: 2px 6px 6px;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.theme-option{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-body);
+  text-align: left;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.theme-option:hover{ background: rgba(255, 255, 255, 0.05); color: #fff; }
+.theme-option.active{ background: rgba(var(--accent-rgb), 0.12); color: #fff; }
+.theme-swatch{
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.15);
+}
+.theme-option .fa-check{ margin-left: auto; font-size: 0.75rem; color: var(--accent); }
+@keyframes panel-pop{
+  from{ opacity: 0; transform: translateY(8px) scale(0.92); }
+  to{ opacity: 1; transform: none; }
+}
+
+/* ==========================================================================
+   SCROLL MOTION GRAPHICS
+   Driven by the scroll position itself (animation-timeline), so it costs no
+   JavaScript per frame. Only opacity and the individual translate/scale
+   properties animate, which the GPU composites without relayout, and they
+   don't clash with the pointer tilt (which uses transform).
+   ========================================================================== */
+@supports (animation-timeline: view()){
+  :root .sr{
+    animation: sr-rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 90%;
+    animation-delay: 0s;
+  }
+  /* Cards swing up out of depth */
+  :root .sr-card{
+    animation-name: sr-card;
+    animation-range: entry 0% cover 30%;
+  }
+  /* Hero copy and the about illustration drift at their own pace */
+  :root .sr-parallax{
+    animation: sr-parallax linear both;
+    animation-timeline: view();
+    animation-range: cover 0% cover 100%;
+  }
+  :root .hero-content.sr-parallax{
+    animation-name: sr-hero-out;
+    animation-range: exit 0% exit 100%;
+  }
+  /* Section glows and shapes move against the scroll for depth. The layer is
+     taller than its section so the shift never shows an edge. */
+  main > section{ overflow: clip; }
+  main > section > .fx{
+    inset: -90px 0;
+    animation: sr-depth linear both;
+    animation-timeline: view();
+    animation-range: cover 0% cover 100%;
+  }
+  /* Timeline line draws itself as the process section scrolls in */
+  .process-line{
+    animation: sr-draw linear both;
+    animation-timeline: view();
+    animation-range: entry 20% cover 45%;
+    transform-origin: left center;
+  }
+  .scroll-progress{
+    transform: none !important;
+    animation: sr-progress linear both;
+    animation-timeline: scroll(root);
+  }
+}
+@keyframes sr-rise{
+  from{ opacity: 0; translate: 0 56px; }
+  to{ opacity: 1; translate: 0 0; }
+}
+@keyframes sr-card{
+  from{ opacity: 0; translate: 0 90px; scale: 0.86; rotate: 1 0 0 28deg; }
+  to{ opacity: 1; translate: 0 0; scale: 1; rotate: 1 0 0 0deg; }
+}
+@keyframes sr-parallax{
+  from{ translate: 0 60px; scale: 0.94; }
+  to{ translate: 0 -60px; scale: 1.02; }
+}
+@keyframes sr-hero-out{
+  from{ opacity: 1; translate: 0 0; }
+  to{ opacity: 0; translate: 0 -120px; }
+}
+@keyframes sr-depth{
+  from{ translate: 0 -90px; }
+  to{ translate: 0 90px; }
+}
+@keyframes sr-draw{
+  from{ scale: 0 1; }
+  to{ scale: 1 1; }
+}
+@keyframes sr-progress{
+  from{ scale: 0 1; }
+  to{ scale: 1 1; }
+}
+
+@media (max-width: 640px){
+  .theme-switcher{ right: 16px; bottom: calc(132px + env(safe-area-inset-bottom)); }
+  .theme-toggle{ width: 42px; height: 42px; }
+  .cta-section{ padding: 80px 0; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .text-gradient, .pricing-card.featured::before{ animation: none; }
+  .hero-canvas{ animation: none; opacity: 1; }
+}
+
+/* ==========================================================================
+   TEXT MOTION
+   Headings are split into words (.split .w). In the hero they rise in on
+   load; elsewhere each word turns up into place as it scrolls into view, one
+   after another. Only opacity/translate/rotate animate (GPU composited).
+   ========================================================================== */
+.split{ perspective: 700px; }
+.split .w{
+  display: inline-block;
+  transform-origin: 50% 100%;
+}
+.count-up, .pricing-price .amount{ font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: no-preference){
+  /* Hero: words rise on page load, then the rest of the copy follows */
+  .split-load .w{
+    animation: word-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i) * 90ms + 150ms);
+  }
+  .split-load .w.text-gradient{
+    animation: word-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both, aurora-shift 8s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i) * 90ms + 150ms), 0s;
+  }
+  .hero-label{ animation: label-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .hero-subtitle{ animation: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.75s both; }
+  .hero-cta{ animation: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.9s both; }
+  .hero-availability{ animation: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) 1.05s both; }
+}
+@keyframes word-up{
+  from{ opacity: 0; translate: 0 0.7em; rotate: 1 0 0 75deg; }
+  to{ opacity: 1; translate: 0 0; rotate: 1 0 0 0deg; }
+}
+@keyframes label-in{
+  from{ opacity: 0; scale: 0.8; translate: 0 10px; }
+  to{ opacity: 1; scale: 1; translate: 0 0; }
+}
+@keyframes fade-up{
+  from{ opacity: 0; translate: 0 24px; }
+  to{ opacity: 1; translate: 0 0; }
+}
+
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion: no-preference){
+    /* Section headings: words turn up one after another while scrolling */
+    .split:not(.split-load) .w{
+      animation: word-up linear both;
+      animation-timeline: view();
+      animation-range: entry calc(var(--i) * 6%) entry calc(70% + var(--i) * 6%);
+    }
+    .split:not(.split-load) .w.text-gradient{
+      animation: word-up linear both, aurora-shift 8s ease-in-out infinite alternate;
+      animation-timeline: view(), auto;
+      animation-range: entry calc(var(--i) * 6%) entry calc(70% + var(--i) * 6%), normal;
+    }
+
+    /* Eyebrow labels: a light wipe reveals them left to right */
+    :root .eyebrow.sr{
+      animation: sr-rise linear both, eyebrow-wipe linear both;
+      animation-timeline: view(), view();
+      animation-range: entry 0% entry 90%, entry 20% cover 35%;
+    }
+
+    /* Icons pop and spin into place after their card arrives */
+    .stat-icon, .service-icon, .feature-icon, .step-icon, .info-icon{
+      animation: icon-pop linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 35%;
+    }
+
+    /* Project screenshots drift inside their frames (parallax) */
+    .portfolio-thumb svg{
+      scale: 1.1;
+      animation: thumb-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+
+    /* Pricing features tick in one by one */
+    .pricing-features li{
+      animation: feature-in linear both;
+      animation-timeline: view();
+      animation-range: entry 10% entry 100%;
+    }
+  }
+}
+@keyframes eyebrow-wipe{
+  from{ clip-path: inset(0 100% 0 0); }
+  to{ clip-path: inset(0 0 0 0); }
+}
+@keyframes icon-pop{
+  from{ opacity: 0; scale: 0.3; rotate: -120deg; }
+  70%{ scale: 1.12; }
+  to{ opacity: 1; scale: 1; rotate: 0deg; }
+}
+@keyframes thumb-drift{
+  from{ translate: 0 -14px; }
+  to{ translate: 0 14px; }
+}
+@keyframes feature-in{
+  from{ opacity: 0; translate: -18px 0; }
+  to{ opacity: 1; translate: 0 0; }
+}
+
+/* ==========================================================================
+   CARD MOTION
+   Hover: a light ring races around the card edge, the card glows in the
+   accent color and its icon fills in with a little wiggle. The ring only
+   animates while hovered.
+   ========================================================================== */
+.stat-card, .feature-card, .tech-card, .portfolio-card, .pricing-card{ position: relative; }
+.stat-card::before, .feature-card::before, .tech-card::before,
+.portfolio-card::before, .pricing-card:not(.featured)::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from var(--spin), transparent 0deg, var(--accent) 60deg, rgba(var(--accent-2-rgb), 0.9) 110deg, transparent 170deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  animation: border-spin 2.8s linear infinite paused;
+  pointer-events: none;
+}
+.stat-card:hover::before, .feature-card:hover::before, .tech-card:hover::before,
+.portfolio-card:hover::before, .pricing-card:not(.featured):hover::before{
+  opacity: 1;
+  animation-play-state: running;
+}
+.stat-card:hover, .feature-card:hover, .tech-card:hover, .portfolio-card:hover, .pricing-card:hover{
+  box-shadow: 0 22px 50px -24px rgba(var(--accent-strong-rgb), 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Icons fill with the accent and wiggle on hover */
+:is(.stat-card, .service-card, .feature-card, .info-item, .process-step):hover :is(.stat-icon, .service-icon, .feature-icon, .info-icon, .step-icon){
+  background: var(--gradient-accent);
+  color: var(--on-accent);
+  border-color: transparent;
+  box-shadow: 0 0 0 6px rgba(var(--accent-rgb), 0.12), 0 10px 24px -8px rgba(var(--accent-strong-rgb), 0.8);
+}
+:is(.stat-card, .service-card, .feature-card, .info-item, .process-step):hover :is(.stat-icon, .service-icon, .feature-icon, .info-icon, .step-icon) i{
+  animation: icon-wiggle 0.6s ease;
+}
+@keyframes icon-wiggle{
+  0%, 100%{ rotate: 0deg; scale: 1; }
+  30%{ rotate: -14deg; scale: 1.15; }
+  60%{ rotate: 10deg; }
+}
+
+/* Service items slide right a touch and their title lights up */
+.service-card{ transition: translate 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+.service-card h3{ transition: color 0.3s ease; }
+.service-card:hover h3{ color: var(--accent-pale); }
+@media (hover: hover){
+  .service-card:hover{ translate: 6px 0; }
+}
+
+/* Check marks on the featured plan pulse in a wave */
+.pricing-card.featured .pricing-features li i{ animation: check-pulse 3s ease-in-out infinite; }
+.pricing-card.featured .pricing-features li:nth-child(2) i{ animation-delay: 0.2s; }
+.pricing-card.featured .pricing-features li:nth-child(3) i{ animation-delay: 0.4s; }
+.pricing-card.featured .pricing-features li:nth-child(4) i{ animation-delay: 0.6s; }
+.pricing-card.featured .pricing-features li:nth-child(5) i{ animation-delay: 0.8s; }
+.pricing-card.featured .pricing-features li:nth-child(6) i{ animation-delay: 1s; }
+.pricing-card.featured .pricing-features li:nth-child(7) i{ animation-delay: 1.2s; }
+.pricing-card.featured .pricing-features li:nth-child(8) i{ animation-delay: 1.4s; }
+@keyframes check-pulse{
+  0%, 70%, 100%{ scale: 1; }
+  80%{ scale: 1.4; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .stat-card::before, .feature-card::before, .tech-card::before,
+  .portfolio-card::before, .pricing-card::before{ animation: none; }
+  .pricing-card.featured .pricing-features li i,
+  :is(.stat-card, .service-card, .feature-card, .info-item, .process-step):hover i{ animation: none; }
+}
